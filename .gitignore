@@ -1,0 +1,10 @@
+venv/
+.env
+__pycache__/
+chroma_db/
+artifacts/
+.mplcache/
+.chainlit/
+chainlit.md
+.pytest_cache/
+eval_agent_results.csv

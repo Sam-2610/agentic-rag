@@ -1,0 +1,16 @@
+langgraph
+chromadb
+fastapi
+uvicorn
+httpx
+pydantic
+sentence-transformers
+pypdf
+langchain-text-splitters
+openai
+python-dotenv
+pandas
+numpy
+matplotlib
+pytest
+chainlit
