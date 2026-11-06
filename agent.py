@@ -21,7 +21,7 @@ from pydantic import BaseModel, ValidationError
 import llm
 import sandbox
 import store
-from config import MAX_CODE_ATTEMPTS
+from config import MAX_CODE_ATTEMPTS, MIN_SCORE
 
 NOT_FOUND_TEXT = "I couldn't find this in the documents."
 BUSY_TEXT = "The AI service is busy right now. Please try again in a minute."
@@ -83,6 +83,9 @@ GREETING = re.compile(
     r"good morning|good afternoon|good evening)[\s!.]*$",
     re.I,
 )
+COMMAND_WORDS = re.compile(
+    r"\b(plot|chart|graph|draw|make|create|show|bar|line|pie|visuali[sz]e)\b", re.I
+)
 ANALYZE_WORDS = re.compile(
     r"\b(plot|chart|graph|visuali[sz]e|histogram|calculate|compute|sum|total|average|mean|median|"
     r"percentage|percent|growth|compare|trend|rank|sort)\b",
@@ -135,6 +138,9 @@ def extract_code(text):
 def retrieval_query(state):
     """Short follow-ups ("and in Q4?") get the previous user question prepended."""
     q = state["question"]
+    if state.get("intent") == "analyze":
+        # "plot revenue by quarter as a bar chart" -> search for the data, not for the drawing words
+        q = re.sub(r"\s+", " ", COMMAND_WORDS.sub(" ", q)).strip() or state["question"]
     earlier = [m for m in state.get("history", []) if m["role"] == "user"]
     if earlier and len(q.split()) < 6:
         return f"{earlier[-1]['content']} {q}"
@@ -183,7 +189,10 @@ def chat_node(state: State) -> dict:
 
 
 def retrieve_node(state: State) -> dict:
-    docs = store.search(retrieval_query(state))
+    # An analysis needs the data even when the request is worded far from the text, so for
+    # "analyze" we keep the top chunks whatever their score (the code agent checks the data).
+    min_score = 0.0 if state["intent"] == "analyze" else MIN_SCORE
+    docs = store.search(retrieval_query(state), min_score=min_score)
     return {"docs": docs, "trace": add_trace(state, f"retrieve: {len(docs)} chunks")}
 
 

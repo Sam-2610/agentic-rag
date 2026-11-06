@@ -107,14 +107,14 @@ def test_analyze_falls_back_to_text(fake):
 def test_analyze_chart_returns_artifact(monkeypatch, fake):
     fake(intent="analyze", code_replies=[CHART])
     hit = {"text": "| North | 420 | 450 |", "source": "s.md", "page": 1, "score": 0.9}
-    monkeypatch.setattr(agent.store, "search", lambda q: [hit])
+    monkeypatch.setattr(agent.store, "search", lambda q, **kw: [hit])
     out = agent.ask("Plot revenue as a bar chart", "t-chart")
     assert any(a.endswith(".png") for a in out["artifacts"])
 
 
 def test_out_of_scope_refused(monkeypatch, fake):
     fake(intent="retrieve")
-    monkeypatch.setattr(agent.store, "search", lambda q: [])
+    monkeypatch.setattr(agent.store, "search", lambda q, **kw: [])
     assert agent.ask("Who won the 2023 cricket world cup?", "t-refuse")["answer"] == agent.NOT_FOUND_TEXT
 
 
@@ -136,3 +136,18 @@ def test_api(fake):
     body = client.post("/chat", json={"question": "Who is the CEO of Northwind Traders?", "session_id": "a1"}).json()
     assert body["intent"] == "retrieve" and body["sources"]
     assert client.get("/artifacts/..%2F..%2Fetc%2Fpasswd").status_code == 404
+
+
+def test_analyze_keeps_low_score_chunks(monkeypatch, fake):
+    seen = {}
+    fake(intent="analyze", code_replies=[GOOD])
+    hit = {"text": "| North | 420 | 450 |", "source": "s.md", "page": 1, "score": 0.1}
+
+    def search(q, **kw):
+        seen.update(query=q, min_score=kw.get("min_score"))
+        return [hit]
+
+    monkeypatch.setattr(agent.store, "search", search)
+    out = agent.ask("Plot revenue by quarter as a bar chart", "t-lowscore")
+    assert seen["min_score"] == 0.0 and "plot" not in seen["query"].lower()
+    assert any("write_code" in t for t in out["trace"])
