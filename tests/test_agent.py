@@ -151,3 +151,11 @@ def test_analyze_keeps_low_score_chunks(monkeypatch, fake):
     out = agent.ask("Plot revenue by quarter as a bar chart", "t-lowscore")
     assert seen["min_score"] == 0.0 and "plot" not in seen["query"].lower()
     assert any("write_code" in t for t in out["trace"])
+
+
+def test_chart_request_overrides_router(monkeypatch, fake):
+    fake(intent="retrieve", code_replies=[CHART])  # the LLM wrongly says "retrieve"
+    hit = {"text": "| North | 420 |", "source": "s.md", "page": 1, "score": 0.2}
+    monkeypatch.setattr(agent.store, "search", lambda q, **kw: [hit])
+    out = agent.ask("Plot revenue as a chart", "t-override")
+    assert out["intent"] == "analyze" and any(a.endswith(".png") for a in out["artifacts"])

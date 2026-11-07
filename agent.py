@@ -33,6 +33,8 @@ ROUTER_SYSTEM = (
     '- "analyze": needs a calculation, a comparison of numbers, a table or a chart built from numbers in the documents.\n'
     '- "chat": greetings, thanks, questions about this conversation or about what you can do, '
     "or anything that needs no documents.\n"
+    'Examples: "Who founded the company?" -> retrieve; "What is the average salary by department?" -> analyze; '
+    '"Add up the sales of all stores" -> analyze; "Draw a pie chart of expenses" -> analyze; "Thanks!" -> chat.\n'
     'Reply with ONLY JSON: {"intent": "retrieve" | "analyze" | "chat", "reason": "<a few words>"}'
 )
 
@@ -86,6 +88,7 @@ GREETING = re.compile(
 COMMAND_WORDS = re.compile(
     r"\b(plot|chart|graph|draw|make|create|show|bar|line|pie|visuali[sz]e)\b", re.I
 )
+CHART_WORDS = re.compile(r"\b(plot|chart|graph|draw|histogram|visuali[sz]e)\b", re.I)
 ANALYZE_WORDS = re.compile(
     r"\b(plot|chart|graph|visuali[sz]e|histogram|calculate|compute|sum|total|average|mean|median|"
     r"percentage|percent|growth|compare|trend|rank|sort)\b",
@@ -175,6 +178,8 @@ def router_node(state: State) -> dict:
         intent, why = "chat", "greeting shortcut, no LLM call"
     else:
         intent, why = classify(q, state.get("history", []))
+        if intent != "analyze" and CHART_WORDS.search(q):
+            intent, why = "analyze", "chart request (rule override)"
     return {
         "intent": intent, "docs": [], "code": "", "run": {}, "attempts": 0,
         "answer": "", "sources": [], "artifacts": [],

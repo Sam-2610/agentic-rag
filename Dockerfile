@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 HF_HOME=/app/.hf MPL_CACHE_DIR=/app/.m
 WORKDIR /app
 
 # CPU-only PyTorch keeps the image far smaller than the default CUDA build
-RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install torch --index-url https://download.pytorch.org/whl/cpu || pip install torch --index-url https://download.pytorch.org/whl/cpu || pip install torch --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt

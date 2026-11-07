@@ -18,6 +18,6 @@ COLLECTION = "documents"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 TOP_K = 6                # chunks retrieved per question
-MIN_SCORE = 0.25         # weak matches are dropped
+MIN_SCORE = 0.15         # weak matches are dropped
 MAX_CODE_ATTEMPTS = 3    # write + fix attempts for the code agent
 SANDBOX_TIMEOUT = 40     # seconds (first run builds the matplotlib font cache)
