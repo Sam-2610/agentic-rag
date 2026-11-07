@@ -24,7 +24,7 @@ flowchart LR
 - **Sandbox:** AST allow-list (no file reading, `os`, `eval`), separate process in isolated mode, no API keys passed in, timeout. This is best-effort protection, not a perfect security boundary, so do not expose it publicly.
 - **Memory:** LangGraph checkpointer keeps a separate history per session.
 
-## Run locally (Python 3.11 or 3.12)
+## Run local in your computer (Python 3.11 or 3.12)
 ```bash
 python -m venv venv
 venv\Scripts\activate
@@ -51,7 +51,7 @@ python -m pytest -q       # 17 fast tests, no API key needed (fake LLM)
 python eval_agent.py      # 17 live test messages against your LLM
 ```
 
-| Metric | Result |
+| Metric | Result  |
 |---|---|
 | Router accuracy | _fill in from eval_agent.py_ |
 | Answer correctness | _fill in_ |
