@@ -1,6 +1,6 @@
 # Agentic Knowledge Retrieval System
 
-A multi-agent RAG system built with **LangGraph**. It routes each message to the right tool: answer from documents with citations, run a safe Python analysis to calculate numbers or draw charts, or just chat. It remembers earlier messages in a session.
+A multi-agent RAG system built with **LangGraph**. It routes each and  message to the right tool: answer from documents with citations, run a safe Python analysis to calculate numbers or draw charts, or just chat. It remembers earlier messages in a session.
 
 **Stack:** Python, LangGraph, ChromaDB, sentence-transformers (all-MiniLM-L6-v2), FastAPI, Pydantic, Chainlit, pandas/matplotlib, any OpenAI-compatible LLM API (Groq, OpenRouter)
 
@@ -24,7 +24,7 @@ flowchart LR
 - **Sandbox:** AST allow-list (no file reading, `os`, `eval`), separate process in isolated mode, no API keys passed in, timeout. This is best-effort protection, not a perfect security boundary, so do not expose it publicly.
 - **Memory:** LangGraph checkpointer keeps a separate history per session.
 
-## Run locally (Python 3.11 or 3.12)
+## Run local in your computer (Python 3.11 or 3.12)
 ```bash
 python -m venv venv
 venv\Scripts\activate
@@ -45,13 +45,13 @@ docker compose up
 ```
 Open http://localhost:8001 for the chat UI and http://localhost:8000/docs for the API. The LLM key is only given to the `api` container, and the container runs as a non-root user.
 
-## Tests and evaluation
+## Tests and evaluations
 ```bash
 python -m pytest -q       # 17 fast tests, no API key needed (fake LLM)
 python eval_agent.py      # 17 live test messages against your LLM
 ```
 
-| Metric | Result |
+| Metric | Result  |
 |---|---|
 | Router accuracy | _fill in from eval_agent.py_ |
 | Answer correctness | _fill in_ |
