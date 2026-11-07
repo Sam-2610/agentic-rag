@@ -1,6 +1,6 @@
 # Agentic Knowledge Retrieval System
 
-A multi-agent RAG system built with **LangGraph**. It routes each message to the right tool: answer from documents with citations, run a safe Python analysis to calculate numbers or draw charts, or just chat. It remembers earlier messages in a session.
+A multi-agent RAG system built with **LangGraph**. It routes each and  message to the right tool: answer from documents with citations, run a safe Python analysis to calculate numbers or draw charts, or just chat. It remembers earlier messages in a session.
 
 **Stack:** Python, LangGraph, ChromaDB, sentence-transformers (all-MiniLM-L6-v2), FastAPI, Pydantic, Chainlit, pandas/matplotlib, any OpenAI-compatible LLM API (Groq, OpenRouter)
 
