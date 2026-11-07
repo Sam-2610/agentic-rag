@@ -45,7 +45,7 @@ docker compose up
 ```
 Open http://localhost:8001 for the chat UI and http://localhost:8000/docs for the API. The LLM key is only given to the `api` container, and the container runs as a non-root user.
 
-## Tests and evaluation
+## Tests and evaluations
 ```bash
 python -m pytest -q       # 17 fast tests, no API key needed (fake LLM)
 python eval_agent.py      # 17 live test messages against your LLM
