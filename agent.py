@@ -12,7 +12,7 @@ import json
 import operator
 import re
 import time
-from typing import Annotated, Literal, TypedDict
+from typing import Annotated, Any, Literal, TypedDict, cast
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
@@ -97,7 +97,7 @@ ANALYZE_WORDS = re.compile(
 
 
 # ---------------------------------------------------------------- state
-class State(TypedDict, total=False):
+class State(TypedDict):
     question: str
     history: Annotated[list, operator.add]  # grows across turns (conversation memory)
     intent: str
@@ -319,7 +319,7 @@ graph = build_graph()
 
 def ask(question: str, session_id: str = "default") -> dict:
     t0 = time.time()
-    out = graph.invoke({"question": question}, config={"configurable": {"thread_id": session_id}})
+    out = graph.invoke(cast(Any, {"question": question}), config={"configurable": {"thread_id": session_id}})
     return {
         "answer": out["answer"], "intent": out["intent"], "sources": out["sources"],
         "artifacts": out["artifacts"], "trace": out["trace"], "seconds": round(time.time() - t0, 2),
